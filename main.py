@@ -4,7 +4,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 # Import cogs
-from cogs import general
+from cogs.general import help
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -22,18 +22,23 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         # List of cogs to load
-        cogs = [general.General]
-        
+        cogs = [
+            (help.General, "General")
+        ]
+    
         # Register cogs
         registered_cogs = set()
-        for cog in cogs:
-            if cog.__name__ not in registered_cogs:
+        for cog, name in cogs:
+            if name not in registered_cogs:
                 try:
-                    await self.add_cog(cog(self))
-                    registered_cogs.add(cog.__name__)
-                    print(f"Loaded cog: {cog.__name__}")
+                    if isinstance(cog, str):
+                        await self.load_extension(cog)
+                    else:
+                        await self.add_cog(cog(self))
+                    registered_cogs.add(name)
+                    print(f"Loaded cog: {name}")
                 except Exception as e:
-                    print(f"Failed to load cog {cog.__name__}: {e}")
+                    print(f"Failed to load cog {name}: {e}")
 
 
 bot = Bot()
@@ -43,11 +48,8 @@ async def on_ready():
     print(f"Logged in as {bot.user}")
     try:
         await bot.tree.sync()
-        print("Slash commands synced!")
     except Exception as e:
         print(f"Error syncing slash commands: {e}")
-    
-    print("Use !help or /help to see available commands")
 
 # Run the bot
 if __name__ == "__main__":
