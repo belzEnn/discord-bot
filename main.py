@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 # Import cogs
 from cogs.general import help
+from cogs.mod import mute
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -23,9 +24,10 @@ class Bot(commands.Bot):
     async def setup_hook(self):
         # List of cogs to load
         cogs = [
-            (help.General, "General")
+            (help.General, "General"),
+            ("cogs.mod.mute", "Moderation")
         ]
-    
+        
         # Register cogs
         registered_cogs = set()
         for cog, name in cogs:
