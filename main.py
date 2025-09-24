@@ -11,11 +11,6 @@ from cogs.general import help
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
-# Проверяем, что токен загружен
-if not TOKEN:
-    print("Ошибка: TOKEN не найден в файле .env.", file=sys.stderr)
-    sys.exit(1)
-
 # Intents   
 intents = discord.Intents.all()
 
@@ -28,14 +23,13 @@ class Bot(commands.Bot):
         self.remove_command('help')
 
     async def setup_hook(self):
-        # Список когов для загрузки (исправлен формат)
         cogs = [
             (help.General, "General"),
             ("cogs.mod.mute", "Moderation"),
             ("cogs.mod.ban", "Ban")
         ]
         
-        # Регистрация когов
+        # Cogs register
         registered_cogs = set()
         for cog, name in cogs:
             if name not in registered_cogs:
@@ -56,7 +50,7 @@ bot = Bot()
 async def on_ready():
     print(f"Logged in as {bot.user}")
     try:
-        # Глобальная синхронизация слэш-команд
+        #verification slash command
         await bot.tree.sync()
         print("Slash commands synced globally.")
     except Exception as e:
